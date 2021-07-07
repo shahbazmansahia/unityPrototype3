@@ -8,12 +8,14 @@ public class SahilController : MonoBehaviour
     private float jumpForce = 10.0f;
     private float gravityForceMult = 1;
     private bool isGrounded = true;
+    public bool isGameOver;
     // Start is called before the first frame update
     void Start()
     {
         sahilRb = GetComponent<Rigidbody>();
         Physics.gravity *= gravityForceMult;
-        
+
+        isGameOver = false;
     }
 
     // Update is called once per frame
@@ -29,7 +31,15 @@ public class SahilController : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        
-        isGrounded = true;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+
+        else if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            Debug.Log("Game 0v3r!");
+            isGameOver = true;
+        }
     }
 }
