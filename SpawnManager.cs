@@ -7,7 +7,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject obstaclePrefab;
     public Vector3 spawnPos = new Vector3(25, 0, 0);
 
-    private float repeatRate = 2.0f;
+    private float repeatRate = 2.25f;
     private float startDelay = 2.0f;
 
     private SahilController sahilControllerScript;
