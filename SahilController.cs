@@ -10,6 +10,13 @@ public class SahilController : MonoBehaviour
     private bool isGrounded = true;
     public bool isGameOver;
 
+    public ParticleSystem explosionParticle;
+    public ParticleSystem dirtParticle;
+
+    private AudioSource sahilAudio;
+    public AudioClip jumpSoundFX;
+    public AudioClip crashSoundFX;
+
     private Animator sahilAnim;
     // Start is called before the first frame update
     void Start()
@@ -18,6 +25,7 @@ public class SahilController : MonoBehaviour
         Physics.gravity *= gravityForceMult;
         jumpForce = sahilRb.mass * 11.6777f; // to set jump force propotionally to the object's mass 
 
+        sahilAudio = GetComponent<AudioSource>();
         sahilAnim = GetComponent<Animator>();
         isGameOver = false;
     }
@@ -30,21 +38,27 @@ public class SahilController : MonoBehaviour
             sahilRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
             sahilAnim.SetTrigger("Jump_trig");
+            sahilAudio.PlayOneShot(jumpSoundFX, 1.0f);
+            dirtParticle.Stop();
         }
         
     }
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") && (!isGameOver))
         {
             isGrounded = true;
+            dirtParticle.Play();
         }
 
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
             Debug.Log("Game 0v3r!");
             isGameOver = true;
+            dirtParticle.Stop();
+            explosionParticle.Play();
+            sahilAudio.PlayOneShot(crashSoundFX, 1.0f);
             sahilAnim.SetBool("Death_b", true);
             sahilAnim.SetInteger("DeathType_int", 2);
         }
