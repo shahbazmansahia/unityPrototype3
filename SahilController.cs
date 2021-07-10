@@ -10,7 +10,7 @@ public class SahilController : MonoBehaviour
     private bool isGrounded = true;
     public bool isDashing;
     public bool isGameOver;
-    
+    public bool isStarted;
 
     private int numJumps;
     private float timestamp;
@@ -26,9 +26,14 @@ public class SahilController : MonoBehaviour
     private Animator sahilAnim;
 
     private GameManager gameManager;
-    private MoveLeft moveLeftScript;
-
+    
     public float gameVelocity = 30.0f;
+
+    public float walkinInit = -5.0f;
+    public float walkinEnd = 0.0f;
+    private float timeElapsed;
+    public float lerpDuration = 5.0f;
+    private float valueToLerp;
 
     // Start is called before the first frame update
     void Start()
@@ -41,44 +46,52 @@ public class SahilController : MonoBehaviour
         sahilAnim = GetComponent<Animator>();
         isGameOver = false;
         isDashing = false;
+        isStarted = false;
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager.incScore(0, 0);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isGameOver)
+        Debug.Log("isStarted: " + isStarted);
+        if (isStarted)
         {
-            gameManager.incScore(Time.deltaTime, 1);
-        }
-        
-        if ((Input.GetKeyDown(KeyCode.Space)) && (numJumps > 0) && (!isGameOver) && (Time.time >= timestamp))
-        {
-            sahilRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            numJumps--;
-            timestamp = Time.time + jumpDelay;
-            isGrounded = false;
-            sahilAnim.SetTrigger("Jump_trig");
-            sahilAudio.PlayOneShot(jumpSoundFX, 1.0f);
-            dirtParticle.Stop();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.LeftShift) && (!isGameOver))
-        {
-            //Debug.Log("Sahil anim speed:" + sahilAnim.speed);
-            sahilAnim.speed = 2;
-            isDashing = true;
-            gameManager.incScore(Time.deltaTime, 2);
-        }
+            if (!isGameOver)
+            {
+                gameManager.incScore(Time.deltaTime, 1);
+            }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift) && (!isGameOver))
-        {
-            //Debug.Log("Sahil dash anim speed:" + sahilAnim.speed);
-            sahilAnim.speed = 1;
-            isDashing = false;
-            gameManager.incScore(Time.deltaTime, 1);
+            if ((Input.GetKeyDown(KeyCode.Space)) && (numJumps > 0) && (!isGameOver) && (Time.time >= timestamp))
+            {
+                sahilRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                numJumps--;
+                timestamp = Time.time + jumpDelay;
+                isGrounded = false;
+                sahilAnim.SetTrigger("Jump_trig");
+                sahilAudio.PlayOneShot(jumpSoundFX, 1.0f);
+                dirtParticle.Stop();
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) && (!isGameOver))
+            {
+                //Debug.Log("Sahil anim speed:" + sahilAnim.speed);
+                sahilAnim.speed = 2;
+                isDashing = true;
+                gameManager.incScore(Time.deltaTime, 2);
+            }
+
+            if (Input.GetKeyUp(KeyCode.LeftShift) && (!isGameOver))
+            {
+                //Debug.Log("Sahil dash anim speed:" + sahilAnim.speed);
+                sahilAnim.speed = 1;
+                isDashing = false;
+                gameManager.incScore(Time.deltaTime, 1);
+            }
         }
+        
     }
 
     public void OnCollisionEnter(Collision collision)
