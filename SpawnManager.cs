@@ -43,8 +43,8 @@ public class SpawnManager : MonoBehaviour
                 float objHeight = obstaclePrefabs[randoPrefab].GetComponent<BoxCollider>().size.y; 
                 for (int i = 0; i <= numObj; i++)
                 {
-                    Debug.Log(objHeight);
-                    Debug.Log(numObj);
+                    //Debug.Log(objHeight);
+                    //Debug.Log(numObj);
 
                     Vector3 tempSpawn = new Vector3(spawnPos.x, (spawnPos.y + (objHeight * i) + 0.1f), spawnPos.z);
                     Instantiate(obstaclePrefabs[randoPrefab], tempSpawn, obstaclePrefabs[randoPrefab].transform.rotation);

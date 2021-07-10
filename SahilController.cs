@@ -8,7 +8,9 @@ public class SahilController : MonoBehaviour
     private float jumpForce = 10.0f;
     private float gravityForceMult = 1.5f; // set to 1.5 instead of 1 to make the object drop a bit faster
     private bool isGrounded = true;
+    public bool isDashing;
     public bool isGameOver;
+    
 
     private int numJumps;
     private float timestamp;
@@ -24,6 +26,9 @@ public class SahilController : MonoBehaviour
     private Animator sahilAnim;
 
     private GameManager gameManager;
+    private MoveLeft moveLeftScript;
+
+    public float gameVelocity = 30.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +40,7 @@ public class SahilController : MonoBehaviour
         sahilAudio = GetComponent<AudioSource>();
         sahilAnim = GetComponent<Animator>();
         isGameOver = false;
+        isDashing = false;
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
@@ -42,6 +48,11 @@ public class SahilController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isGameOver)
+        {
+            gameManager.incScore(Time.deltaTime, 1);
+        }
+        
         if ((Input.GetKeyDown(KeyCode.Space)) && (numJumps > 0) && (!isGameOver) && (Time.time >= timestamp))
         {
             sahilRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -53,6 +64,21 @@ public class SahilController : MonoBehaviour
             dirtParticle.Stop();
         }
         
+        if (Input.GetKeyDown(KeyCode.LeftShift) && (!isGameOver))
+        {
+            //Debug.Log("Sahil anim speed:" + sahilAnim.speed);
+            sahilAnim.speed = 2;
+            isDashing = true;
+            gameManager.incScore(Time.deltaTime, 2);
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift) && (!isGameOver))
+        {
+            //Debug.Log("Sahil dash anim speed:" + sahilAnim.speed);
+            sahilAnim.speed = 1;
+            isDashing = false;
+            gameManager.incScore(Time.deltaTime, 1);
+        }
     }
 
     public void OnCollisionEnter(Collision collision)

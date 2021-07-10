@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log("Score = " + score);
     }
 
     /**
@@ -22,12 +22,9 @@ public class GameManager : MonoBehaviour
      * param: isActive - activates and deactivates the score tally depending on the value passed. Think of it as a start/stop for the counter
      *
     */
-    public void incScore(bool isActive)
+    public void incScore(float value, int multiplier)
     {
-        if (isActive)
-        {
-            score += Time.deltaTime;
-        }
+            score += value * multiplier * 100;
     }
 
     /**
@@ -35,20 +32,12 @@ public class GameManager : MonoBehaviour
      * param: isActive - activates and deactivates the score tally depending on the value passed. Think of it as a start/stop for the counter
      *
     */
-    public void incScoreTwice(bool isActive)
-    {
-        if (isActive)
-        {
-            score += Time.deltaTime * 2.0f;
-        }
-    }
 
     /**
      * Stop all score counter functions. Intended to be used at gameOver
     */
     public void stopScore()
     {
-        incScore(false);
-        incScoreTwice(false);
+        incScore(0.0f, 0);
     }
 }
