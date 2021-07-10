@@ -10,6 +10,10 @@ public class SahilController : MonoBehaviour
     private bool isGrounded = true;
     public bool isGameOver;
 
+    private int numJumps;
+    private float timestamp;
+    private float jumpDelay = 0.25f;
+
     public ParticleSystem explosionParticle;
     public ParticleSystem dirtParticle;
 
@@ -18,6 +22,9 @@ public class SahilController : MonoBehaviour
     public AudioClip crashSoundFX;
 
     private Animator sahilAnim;
+
+    private GameManager gameManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,14 +35,18 @@ public class SahilController : MonoBehaviour
         sahilAudio = GetComponent<AudioSource>();
         sahilAnim = GetComponent<Animator>();
         isGameOver = false;
+
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space)) && isGrounded && (!isGameOver))
+        if ((Input.GetKeyDown(KeyCode.Space)) && (numJumps > 0) && (!isGameOver) && (Time.time >= timestamp))
         {
             sahilRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            numJumps--;
+            timestamp = Time.time + jumpDelay;
             isGrounded = false;
             sahilAnim.SetTrigger("Jump_trig");
             sahilAudio.PlayOneShot(jumpSoundFX, 1.0f);
@@ -50,17 +61,26 @@ public class SahilController : MonoBehaviour
         {
             isGrounded = true;
             dirtParticle.Play();
+            numJumps = 2;
         }
 
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
-            Debug.Log("Game 0v3r!");
-            isGameOver = true;
-            dirtParticle.Stop();
-            explosionParticle.Play();
-            sahilAudio.PlayOneShot(crashSoundFX, 1.0f);
-            sahilAnim.SetBool("Death_b", true);
-            sahilAnim.SetInteger("DeathType_int", 2);
+            GameOver();
         }
+    }
+
+    public void GameOver()
+    {
+        
+        Debug.Log("Game 0v3r!");
+        isGameOver = true;
+        gameManager.stopScore();
+        dirtParticle.Stop();
+        explosionParticle.Play();
+        sahilAudio.PlayOneShot(crashSoundFX, 1.0f);
+        sahilAnim.SetBool("Death_b", true);
+        sahilAnim.SetInteger("DeathType_int", 2);
+        
     }
 }
